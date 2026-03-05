@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Experiencia - Escapada de Ensueño</title>
+    <link rel="shortcut icon" href="../img/ico/casaensueño-ico.ico.png" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss"></style>
+</head>
+
+<body class="flex flex-col min-h-screen bg-gray-50">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <span class="md:flex gap-2 ">
+                <h1 class="text-lime-700 font-bold"><a href="../pages/experiencias.html">Escapada de Ensueño</a></h1>
+            </span>
+            <nav class="hidden md:flex gap-6 text-lime-500">
+                <a href="../apartamentos.html" class="hover:text-lime-900 font-semibold">Alojamientos</a>
+                <a href="../experiencias.html" class="hover:text-lime-900 font-semibold">Experiencias</a>
+                <a href="../servicios.html" class="hover:text-lime-900 font-semibold">Servicios</a>
+                <a href="../contacto.html" class="hover:text-lime-900 font-semibold">Contacto</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex flex-col items-center flex-1 w-full max-w-5xl mx-auto px-6 py-10">
+
+        <button class="self-start mb-6 bg-lime-600 text-white px-6 py-2 rounded-lg hover:bg-lime-700 transition"><a
+                href="../experiencias.html">
+                ← Volver
+            </a>
+        </button>
+
+        <div id="detalle-experiencia"
+            class="bg-white rounded-xl shadow-lg overflow-hidden w-full flex flex-col md:flex-row">
+            <!-- Imagen -->
+            <img id="detalle-imagen" src="../img/default.webp" alt="Imagen del experiencia"
+                class="w-full md:w-1/2 h-80 object-cover">
+
+            <!-- Información -->
+            <div class="flex flex-col p-6 md:w-1/2">
+                <h2 id="detalle-nombre" class="text-2xl font-bold text-lime-700 mb-4">Nombre del experiencia</h2>
+                <p id="detalle-descripcion" class="text-gray-600 mb-4">Descripción completa del experiencia...</p>
+                <p id="detalle-resumen" class="text-gray-500 mb-4 font-medium">Resumen breve...</p>
+                <p id="detalle-precio" class="text-gray-700 font-semibold text-lg">Precio: 0 €/hora</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full bg-green-100 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-lime-600">
+            <span> &copy; 2026 Alojamiento en Sueño </span>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-lime-900 font-semibold">Privacidad</a>
+                <a href="#" class="hover:text-lime-900 font-semibold">Condiciones</a>
+                <a href="#" class="hover:text-lime-900 font-semibold">Datos de la Empresa</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Obtener el ID desde la URL
+        const params = new URLSearchParams(window.location.search);
+        const id = parseInt(params.get("id")); // id que se pasó
+
+        // 2. Obtener la lista de experiencias desde localStorage
+        const experiencias = JSON.parse(localStorage.getItem("experienciasGuardaos")) || [];
+
+        // 3. Buscar el experiencia por ID
+        const experiencia = experiencias.find(a => a.id === id);
+
+        // 4. Si existe, rellenar el HTML
+        if (experiencia) {
+            const imgSrc = experiencia.imageURL ? `../${experiencia.imageURL}` : "../../img/default.webp";
+            document.getElementById("detalle-imagen").src = imgSrc || "../../img/default.webp";
+            document.getElementById("detalle-nombre").textContent = experiencia.name;
+            document.getElementById("detalle-descripcion").textContent = experiencia.description;
+            document.getElementById("detalle-resumen").textContent = experiencia.resumen;
+            document.getElementById("detalle-precio").textContent = `Precio: ${experiencia.price} €/noche`;
+        } else {
+            // Por si no encuentra el experiencia
+            document.getElementById("detalle-nombre").textContent = "Experiencia no encontrado";
+        }
+    </script>
+
+</body>
+
+</html>

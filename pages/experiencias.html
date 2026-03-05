@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escapada de Ensueño - Experiencias</title>
+  <link rel="shortcut icon" href="../img/ico/casaensueño-ico.ico.png" type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss"></style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+   <header class="bg-white shadow-sm">
+    <div id="cabecera" class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <span class="md:flex gap-2 ">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
+          class="icon icon-tabler icons-tabler-filled icon-tabler-home fill-green-900">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path
+            d="M12.707 2.293l9 9c.63 .63 .184 1.707 -.707 1.707h-1v6a3 3 0 0 1 -3 3h-1v-7a3 3 0 0 0 -2.824 -2.995l-.176 -.005h-2a3 3 0 0 0 -3 3v7h-1a3 3 0 0 1 -3 -3v-6h-1c-.89 0 -1.337 -1.077 -.707 -1.707l9 -9a1 1 0 0 1 1.414 0m.293 11.707a1 1 0 0 1 1 1v7h-4v-7a1 1 0 0 1 .883 -.993l.117 -.007z" />
+        </svg>
+        <h1 class="text-lime-700 font-bold"><a href="../index.html">Escapada de Ensueño</a></h1>
+      </span>
+      <!-- MENU MOVIL -->
+      <!-- HAMBURGUESA -->
+      <span class="md:hidden" id="menu-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="icon icon-tabler icons-tabler-outline icon-tabler-menu-2">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M4 6l16 0" />
+          <path d="M4 12l16 0" />
+          <path d="M4 18l16 0" />
+        </svg></span>
+      <!-- MENU MOVIL -->
+      <nav id="mobile-menu"
+        class=" fixed top-0 right-0 transform translate-x-full transition-transform duration-500  bg-white/90 shadow-lg h-screen flex flex-col gap-8 w-64 px-6 py-4 text-lime-500 md:hidden ">
+        <svg id="btn-close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="icon icon-tabler icons-tabler-outline icon-tabler-x">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M18 6l-12 12" />
+          <path d="M6 6l12 12" />
+        </svg>
+        <div class="flex flex-col">
+          <a href="pages/apartamentos.html" class="hover:text-lime-900 font-semibold">Alojamientos</a>
+          <a href="pages/experiencias.html" class="hover:text-lime-900 font-semibold">Experiencias</a>
+          <a href="pages/servicios.html" class="hover:text-lime-900 font-semibold">Servicios</a>
+          <a href="pages/contacto.html" class="hover:text-lime-900 font-semibold">Contacto</a>
+        </div>
+      </nav>
+      <!-- MENU NORMAL -->
+      <nav class="hidden md:flex gap-6 text-lime-500">
+        <a href="../pages/apartamentos.html" class="hover:text-lime-900 font-semibold">Alojamientos</a>
+        <a href="../pages/experiencias.html" class="hover:text-lime-900 font-semibold">Experiencias</a>
+        <a href="../pages/servicios.html" class="hover:text-lime-900 font-semibold">Servicios</a>
+        <a href="../pages/contacto.html" class="hover:text-lime-900 font-semibold">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex flex-col items-center flex-1 w-full max-w-7xl mx-auto px-6 mt-10">
+    <section class="w-full">
+      <h1 class="text-center mb-10 font-bold text-4xl text-lime-600">EXPERIENCIAS</h1>
+
+      <div class="flex justify-center gap-4 mb-10">
+        <button id="btnGestionar"
+          class="bg-lime-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-lime-700 transition">
+          Gestionar
+        </button>
+
+        <button id="btnAgregarModal" class="hidden bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-700 transition">
+          + Añadir
+        </button>
+      </div>
+
+      <ul id="lista-experiencias" class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></ul>
+    </section>
+
+    <!-- MODAL FORM -->
+    <div id="modalForm" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <form id="formG" class="bg-white w-full max-w-lg p-8 rounded-xl flex flex-col gap-4">
+        <h2 id="tituloModal" class="text-2xl font-bold text-lime-700 text-center">
+          Añadir experiencia
+        </h2>
+
+        <label for="name" class="font-semibold text-lime-800">Experiencia</label>
+        <input type="text" name="name" id="name" class="border p-2 rounded bg-white" required placeholder="De 1 a 30 caracteres">
+
+        <label for="imageURL" class="font-semibold text-lime-800">Imagen URL</label>
+        <input type="text" name="imageURL" id="imageURL" class="border p-2 rounded bg-white">
+
+        <label for="description" class="font-semibold text-lime-800">Descripción</label>
+        <textarea name="description" id="description" class="border p-2 rounded bg-white" required placeholder="De 10 a 500 caracteres"></textarea>
+
+        <label for="resumen" class="font-semibold text-lime-800">Resumen</label>
+        <input type="text" id="resumen" name="resumen" class="border p-2 rounded bg-white" placeholder="De 1 a 30 caracteres">
+
+        <label for="price" class="font-semibold text-lime-800">Precio €/persona</label>
+        <input type="text" name="price" id="price" class="border p-2 rounded bg-white" placeholder="Ej: 15">
+
+        <div class="flex justify-between mt-4">
+          <button type="submit" class="bg-lime-600 text-white px-6 py-2 rounded hover:bg-lime-700">
+            Guardar
+          </button>
+          <button type="button" id="cerrarModal" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="w-full bg-green-100 py-6">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-lime-600">
+      <span> &copy; 2026 Alojamiento en Sueño </span>
+    </div>
+  </footer>
+
+   
+  <script src="../app/app.js"></script>
+  <script src="../app/gestionarExperiencias.js"></script>
+</body>
+</html>
