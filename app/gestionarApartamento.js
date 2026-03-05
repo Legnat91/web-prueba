@@ -53,8 +53,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         mostrarLista(apartamentos);
 
+
+    }
+    /*Cargar y GuardarCarrito */
+    function obtenerCarrito() {
+        return JSON.parse(localStorage.getItem("carritoGlobal")) || [];
     }
 
+    function guardarCarrito(carrito) {
+        localStorage.setItem("carritoGlobal", JSON.stringify(carrito));
+    }
 
     /* MOSTRAR APARTAMENTOS */
 
@@ -67,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const li = document.createElement("li");
             const contenedor = document.createElement("div");
             const botonesOcul = document.createElement("div");
-            const botonesCont=document.createElement("div");
+            const botonesCont = document.createElement("div");
 
             li.className =
                 "bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden";
@@ -79,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "flex gap-2 mt-4 botones-admin";
 
 
-            botonesCont.className="flex gap-2 mt-4 botones-admin";
+            botonesCont.className = "flex gap-2 mt-4 botones-admin";
 
 
             if (!modoGestion) {
@@ -161,25 +169,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
             /*BOTON VER MAS */
 
-            const btnVer=document.createElement("button");
-            btnVer.textContent="Ver más";
-            btnVer.className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700";
-            btnVer.addEventListener("click",()=>{
-                window.location.href=`../pages/detalles/verApartamento.html?id=${datos.id}`;
+            const btnVer = document.createElement("button");
+            btnVer.textContent = "Ver más";
+            btnVer.className = "bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 hover:cursor-pointer";
+            btnVer.addEventListener("click", () => {
+                window.location.href = `../pages/detalles/verApartamento.html?id=${datos.id}`;
             })
 
             /*Boton Carrito */
 
-            const btnAgregarC=document.createElement("button");
-            btnAgregarC.textContent="Reservar";
-            btnAgregarC.className="bg-yellow-600 text-white px-3 py-2 rounded hover:bg-yellow-700";
-            // btnAgregarC.addEventListener("click",()=>{
-            //     window.location.href=
-            // });
+            const btnAgregarC = document.createElement("button");
+            btnAgregarC.textContent = "Reservar";
+            btnAgregarC.className = "bg-yellow-600 text-white px-3 py-2 rounded hover:bg-yellow-700 hover:cursor-pointer";
+            btnAgregarC.addEventListener("click", () => {
+                let carrito = obtenerCarrito();
+
+                carrito.push({
+                    id: datos.id,
+                    name: datos.name,
+                    price: datos.price,
+                    room: datos.room,
+                    person: datos.person,
+                    imageURL: datos.imageURL
+                });
+                guardarCarrito(carrito);
+
+
+            });
 
 
             botonesOcul.append(btnModificar, btnEliminar);
-            botonesCont.append(btnVer,btnAgregarC);
+            botonesCont.append(btnVer, btnAgregarC);
 
             contenedor.append(
                 img,
