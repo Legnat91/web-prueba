@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnVer.className = "bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 hover:cursor-pointer";
             btnVer.addEventListener("click", () => {
                 window.location.href = `../pages/detalles/verApartamento.html?id=${datos.id}`;
-            })
+            });
 
             /*Boton Carrito */
 
@@ -184,14 +184,25 @@ document.addEventListener("DOMContentLoaded", () => {
             btnAgregarC.addEventListener("click", () => {
                 let carrito = obtenerCarrito();
 
-                carrito.push({
-                    id: datos.id,
-                    name: datos.name,
-                    price: datos.price,
-                    room: datos.room,
-                    person: datos.person,
-                    imageURL: datos.imageURL
-                });
+
+                const productoExistente = carrito.find(p => p.id === datos.id);
+
+                if (productoExistente) {
+                    // Si ya existe, solo sumamos la cantidad
+                    productoExistente.amount = Number(productoExistente.amount) + 1;
+                } else {
+
+                    carrito.push({
+                        id: datos.id,
+                        name: datos.name,
+                        price: datos.price,
+                        room: datos.room,
+                        person: datos.person,
+                        imageURL: datos.imageURL,
+                        amount: 1
+                    });
+
+                }
                 guardarCarrito(carrito);
 
 

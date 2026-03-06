@@ -1,27 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    const cabecera = document.getElementById("cabecera");
-
-    function dibujarIconoCarrito() {
-        const carritoContenedor = document.createElement("div");
-
-        carritoContenedor.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>`;
-        carritoContenedor.className = "hover:cursor-pointer";
-        carritoContenedor.id = "carritoContenedor";
-        carritoContenedor.className = "hover:cursor-pointer";
-
-        cabecera.append(carritoContenedor);
-    }
-
-    function obtenerCarrito() {
-        return JSON.parse(localStorage.getItem("carritoGlobal")) || [];
-    }
-
-    function guardarCarrito(carrito) {
-        localStorage.setItem("carritoGlobal", JSON.stringify(carrito));
-    }
-
-    function dibujarListaCarrito() {
+export function dibujarListaCarrito() {
 
         const carrito = obtenerCarrito();
         const lista = document.getElementById("listaCarrito");
@@ -107,34 +84,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
         });
     }
-
-    function crearPanelCarrito() {
-
-        const panel = document.createElement("div");
-
-        panel.className = "fixed top-0 right-0 w-72 h-screen bg-white shadow-lg p-6 translate-x-full transition-transform";
-
-        panel.innerHTML = `
-            <button id="cerrarCarrito">X</button>
-            <ul id="listaCarrito"></ul>
-        `;
-
-        document.body.append(panel);
-
-        const carritoBtn = document.getElementById("carritoContenedor");
-
-        carritoBtn.addEventListener("click", () => {
-            panel.classList.remove("translate-x-full");
-            dibujarListaCarrito();
-        });
-
-        document.getElementById("cerrarCarrito").addEventListener("click", () => {
-            panel.classList.add("translate-x-full");
-        });
-
-    }
-
-    dibujarIconoCarrito();
-    crearPanelCarrito();
-
-});
