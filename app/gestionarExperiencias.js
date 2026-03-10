@@ -1,10 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ELEMENTOS
+
   const btnGestionar = document.getElementById("btnGestionar");
   const btnAgregarModal = document.getElementById("btnAgregarModal");
-  const lista = document.getElementById("lista-experiencias");
+
+  const lista = document.querySelector("#lista-experiencias");
+
   const modalForm = document.getElementById("modalForm");
   const cerrarModal = document.getElementById("cerrarModal");
+
   const formG = document.getElementById("formG");
   const tituloModal = document.getElementById("tituloModal");
 
@@ -18,59 +21,238 @@ document.addEventListener("DOMContentLoaded", () => {
   let modoEdicion = false;
   let idEditar = null;
 
-  // ID ÚNICO
+  /* GENERAR ID */
+
   function obtenerNuevoId() {
-    let contador = parseInt(localStorage.getItem("contadorExperiencias")) || 0;
+
+    let contador =
+      parseInt(localStorage.getItem("contadorExperiencias")) || 0;
+
     contador++;
+
     localStorage.setItem("contadorExperiencias", contador);
+
     return contador;
+
   }
 
-  // CARGAR DATOS
+  /* CARGAR DATOS */
+
   function cargarDatos() {
-    const experiencias = JSON.parse(localStorage.getItem('experienciasGuardaos')) || [];
+
+    const experiencias =
+      JSON.parse(localStorage.getItem("experienciasGuardaos")) || [];
+
     mostrarLista(experiencias);
+
   }
 
-  // MOSTRAR EXPERIENCIAS
+  /* CARRITO */
+
+  function obtenerCarrito() {
+    return JSON.parse(localStorage.getItem("carritoGlobal")) || [];
+  }
+
+  function guardarCarrito(carrito) {
+    localStorage.setItem("carritoGlobal", JSON.stringify(carrito));
+  }
+
+  function calcularTotal() {
+
+    let carrito = obtenerCarrito();
+    let total = 0;
+
+    carrito.forEach(item => {
+      total += Number(item.price) * Number(item.amount);
+    });
+
+    return total;
+
+  }
+
+  function dibujarListaCarrito() {
+
+    const carrito = obtenerCarrito();
+    const listaCarrito = document.getElementById("listaCarrito");
+
+    if (!listaCarrito) return;
+
+    listaCarrito.innerHTML = "";
+
+    carrito.forEach(articulo => {
+
+      const li = document.createElement("li");
+
+      li.className =
+        "flex items-center gap-4 p-3 mb-3 bg-gray-100 rounded-lg shadow hover:bg-gray-200 transition";
+
+      const img = document.createElement("img");
+      img.src = articulo.imageURL || "../img/default.webp";
+      img.className = "w-16 h-16 object-cover rounded";
+
+      const info = document.createElement("div");
+      info.className = "flex-1 flex flex-col";
+
+      const nombre = document.createElement("span");
+      nombre.textContent = articulo.name;
+      nombre.className = "font-semibold text-gray-800";
+
+      const precio = document.createElement("span");
+      precio.textContent =
+        (Number(articulo.price) * Number(articulo.amount)) + " €";
+      precio.className = "text-gray-600 text-sm";
+
+      const cantidadDiv = document.createElement("div");
+      cantidadDiv.className = "flex items-center gap-2 mt-1";
+
+      const btnMenos = document.createElement("button");
+      btnMenos.textContent = "-";
+      btnMenos.className =
+        "px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600";
+
+      const cantidad = document.createElement("span");
+      cantidad.textContent = articulo.amount;
+      cantidad.className = "px-2";
+
+      const btnMas = document.createElement("button");
+      btnMas.textContent = "+";
+      btnMas.className =
+        "px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600";
+
+      const btnDelete = document.createElement("button");
+      btnDelete.textContent = "Eliminar";
+      btnDelete.className =
+        "px-2 py-1 bg-gray-800 text-white rounded hover:bg-gray-900";
+
+      btnMas.addEventListener("click", () => {
+
+        articulo.amount++;
+
+        let carritoActual =
+          obtenerCarrito().map(p =>
+            p.id === articulo.id
+              ? { ...p, amount: articulo.amount }
+              : p
+          );
+
+        guardarCarrito(carritoActual);
+
+        dibujarListaCarrito();
+
+      });
+
+      btnMenos.addEventListener("click", () => {
+
+        articulo.amount--;
+
+        if (articulo.amount < 1) articulo.amount = 0;
+
+        let carritoActual =
+          obtenerCarrito().map(p =>
+            p.id === articulo.id
+              ? { ...p, amount: articulo.amount }
+              : p
+          );
+
+        guardarCarrito(carritoActual);
+
+        dibujarListaCarrito();
+
+      });
+
+      btnDelete.addEventListener("click", () => {
+
+        let carritoActual =
+          obtenerCarrito().filter(a => a.id !== articulo.id);
+
+        guardarCarrito(carritoActual);
+
+        dibujarListaCarrito();
+
+      });
+
+      cantidadDiv.append(btnMenos, cantidad, btnMas);
+
+      info.append(nombre, precio, cantidadDiv);
+
+      li.append(img, info, btnDelete);
+
+      listaCarrito.append(li);
+
+    });
+
+    const totalDiv = document.createElement("div");
+
+    totalDiv.className =
+      "mt-4 p-3 font-bold text-lg text-right border-t border-gray-300";
+
+    totalDiv.textContent =
+      "Total: " + calcularTotal() + " €";
+
+    listaCarrito.append(totalDiv);
+
+  }
+
+  /* MOSTRAR LISTA */
+
   function mostrarLista(datosArray) {
+
     lista.innerHTML = "";
 
     datosArray.forEach(datos => {
+
       const li = document.createElement("li");
       const contenedor = document.createElement("div");
-      const contenedorBtn = document.createElement("div");
+      const botonesAdmin = document.createElement("div");
+      const botonesCont = document.createElement("div");
 
-      li.className = "bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden";
-      contenedor.className = "flex flex-col justify-between items-center p-4";
-      contenedorBtn.className = "flex gap-2 mt-4 botones-admin";
-      contenedorBtn.classList.toggle("hidden", !modoGestion);
+      li.className =
+        "bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden";
 
-      const expImg = document.createElement("img");
-      expImg.src = datos.imageURL || "../img/default.webp";
-      expImg.className = "h-60 w-full object-cover";
+      contenedor.className =
+        "flex flex-col justify-between items-center p-4";
 
-      const expName = document.createElement("p");
-      expName.textContent = datos.name;
-      expName.className = "text-black text-sm mt-1 font-bold";
+      botonesAdmin.className =
+        "flex gap-2 mt-4 botones-admin";
 
-      const expDescription = document.createElement("p");
-      expDescription.textContent = datos.description;
-      expDescription.className = "text-gray-500 text-sm mt-1 text-center";
+      botonesCont.className =
+        "flex gap-2 mt-4";
 
-      const expResumen = document.createElement("p");
-      expResumen.textContent = datos.resumen;
-      expResumen.className = "text-gray-500 text-sm mt-1";
+      if (!modoGestion) {
+        botonesAdmin.classList.add("hidden");
+      }
 
-      const expPrice = document.createElement("p");
-      expPrice.textContent = `${datos.price} €/persona`;
-      expPrice.className = "mt-3 font-semibold";
+      const img = document.createElement("img");
+      img.src = datos.imageURL || "../img/default.webp";
+      img.className = "h-60 w-full object-cover";
 
-      // BOTÓN MODIFICAR
+      const titulo = document.createElement("p");
+      titulo.textContent = datos.name;
+      titulo.className = "font-bold mt-2";
+
+      const des = document.createElement("p");
+      des.textContent = datos.description;
+      des.className = "text-gray-500 text-center text-sm";
+
+      const res = document.createElement("p");
+      res.textContent = datos.resumen;
+      res.className = "text-gray-500 text-sm";
+
+      const precio = document.createElement("p");
+      precio.textContent = `${datos.price} €/persona`;
+      precio.className = "font-semibold mt-2";
+
+      /* MODIFICAR */
+
       const btnModificar = document.createElement("button");
+
       btnModificar.textContent = "Modificar";
-      btnModificar.className = "bg-lime-600 text-white px-3 py-2 rounded hover:bg-lime-700";
+
+      btnModificar.className =
+        "bg-lime-600 text-white px-3 py-2 rounded hover:bg-lime-700";
+
       btnModificar.addEventListener("click", () => {
+
         name.value = datos.name;
         imageURL.value = datos.imageURL;
         description.value = datos.description;
@@ -78,92 +260,210 @@ document.addEventListener("DOMContentLoaded", () => {
         price.value = datos.price;
 
         modoEdicion = true;
+
         idEditar = datos.id;
+
         tituloModal.textContent = "Editar experiencia";
+
         modalForm.classList.remove("hidden");
+
       });
 
-      // BOTÓN ELIMINAR
+      /* ELIMINAR */
+
       const btnEliminar = document.createElement("button");
+
       btnEliminar.textContent = "Eliminar";
-      btnEliminar.className = "bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700";
+
+      btnEliminar.className =
+        "bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700";
+
       btnEliminar.addEventListener("click", () => {
-        if (confirm("¿Seguro que quieres eliminar esta experiencia?")) {
-          eliminarExperiencia(datos.id);
-        }
+
+        let experiencias =
+          JSON.parse(localStorage.getItem("experienciasGuardaos")) || [];
+
+        experiencias =
+          experiencias.filter(exp => exp.id !== datos.id);
+
+        localStorage.setItem(
+          "experienciasGuardaos",
+          JSON.stringify(experiencias)
+        );
+
+        cargarDatos();
+
       });
+
+      /* VER */
+
       const btnVer = document.createElement("button");
+
       btnVer.textContent = "Ver más";
-      btnVer.className = "bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700";
+
+      btnVer.className =
+        "bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700";
+
       btnVer.addEventListener("click", () => {
-        window.location.href = `../pages/detalles/verExperiencias.html?id=${datos.id}`;
-      })
 
-      contenedorBtn.append(btnModificar, btnEliminar);
-      contenedor.append(expImg, expName, expDescription, expResumen, expPrice,btnVer, contenedorBtn);
-      li.appendChild(contenedor);
+        window.location.href =
+          `../pages/detalles/verExperiencias.html?id=${datos.id}`;
+
+      });
+
+      /* RESERVAR */
+
+      const btnAgregarC = document.createElement("button");
+
+      btnAgregarC.textContent = "Reservar";
+
+      btnAgregarC.className =
+        "bg-yellow-600 text-white px-3 py-2 rounded hover:bg-yellow-700";
+
+      btnAgregarC.addEventListener("click", () => {
+
+        let carrito = obtenerCarrito();
+
+        const productoExistente =
+          carrito.find(p => p.id === datos.id);
+
+        if (productoExistente) {
+
+          productoExistente.amount =
+            Number(productoExistente.amount) + 1;
+
+        } else {
+
+          carrito.push({
+            id: datos.id,
+            name: datos.name,
+            price: datos.price,
+            imageURL: datos.imageURL,
+            amount: 1
+          });
+
+        }
+
+        guardarCarrito(carrito);
+
+        dibujarListaCarrito();
+
+      });
+
+      botonesAdmin.append(btnModificar, btnEliminar);
+
+      botonesCont.append(btnVer, btnAgregarC);
+
+      contenedor.append(
+        img,
+        titulo,
+        des,
+        res,
+        precio,
+        botonesCont,
+        botonesAdmin
+      );
+
+      li.append(contenedor);
+
       lista.appendChild(li);
+
     });
+
   }
 
-  // ELIMINAR
-  function eliminarExperiencia(id) {
-    let experiencias = JSON.parse(localStorage.getItem('experienciasGuardaos')) || [];
-    experiencias = experiencias.filter(exp => exp.id !== id);
-    localStorage.setItem('experienciasGuardaos', JSON.stringify(experiencias));
-    cargarDatos();
-  }
+  /* FORMULARIO */
 
-  // ABRIR MODAL AÑADIR
-  function abrirModalAñadir() {
-    modoEdicion = false;
-    formG.reset();
-    tituloModal.textContent = "Añadir experiencia";
-    modalForm.classList.remove("hidden");
-  }
-
-  btnAgregarModal.addEventListener("click", abrirModalAñadir);
-
-  // CERRAR MODAL
-  cerrarModal.addEventListener("click", () => {
-    modalForm.classList.add("hidden");
-  });
-
-  // GUARDAR FORMULARIO
   formG.addEventListener("submit", (e) => {
+
     e.preventDefault();
 
-    let experiencias = JSON.parse(localStorage.getItem('experienciasGuardaos')) || [];
-    const datos = {
+    let experiencias =
+      JSON.parse(localStorage.getItem("experienciasGuardaos")) || [];
+
+    const datosFormulario = {
+
       id: modoEdicion ? idEditar : obtenerNuevoId(),
+
       name: name.value.trim(),
+
       imageURL: imageURL.value.trim(),
+
       description: description.value.trim(),
+
       resumen: resumen.value.trim(),
-      price: price.value.trim()
+
+      price: price.value
+
     };
 
     if (modoEdicion) {
-      experiencias = experiencias.map(exp => exp.id === idEditar ? datos : exp);
-      modoEdicion = false;
-      idEditar = null;
+
+      experiencias = experiencias.map(exp =>
+        exp.id === idEditar ? datosFormulario : exp
+      );
+
     } else {
-      experiencias.push(datos);
+
+      experiencias.push(datosFormulario);
+
     }
 
-    localStorage.setItem('experienciasGuardaos', JSON.stringify(experiencias));
-    formG.reset();
+    localStorage.setItem(
+      "experienciasGuardaos",
+      JSON.stringify(experiencias)
+    );
+
     modalForm.classList.add("hidden");
+
+    formG.reset();
+
+    modoEdicion = false;
+
     cargarDatos();
+
   });
 
-  // BOTÓN GESTIONAR
+  /* ABRIR MODAL */
+
+  btnAgregarModal.addEventListener("click", () => {
+
+    modoEdicion = false;
+
+    formG.reset();
+
+    tituloModal.textContent = "Añadir experiencia";
+
+    modalForm.classList.remove("hidden");
+
+  });
+
+  /* CERRAR MODAL */
+
+  cerrarModal.addEventListener("click", () => {
+
+    modalForm.classList.add("hidden");
+
+  });
+
+  /* MODO GESTION */
+
   btnGestionar.addEventListener("click", () => {
+
     modoGestion = !modoGestion;
-    btnAgregarModal.classList.toggle("hidden", !modoGestion);
+
+    btnGestionar.textContent =
+      modoGestion ? "Cerrar gestión" : "Gestionar";
+
+    btnAgregarModal.classList.toggle("hidden");
+
     cargarDatos();
+
   });
 
-  // INICIALIZAR
+  /* INICIAR */
+
   cargarDatos();
+  dibujarListaCarrito();
+
 });

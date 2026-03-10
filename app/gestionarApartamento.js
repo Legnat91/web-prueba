@@ -64,7 +64,101 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("carritoGlobal", JSON.stringify(carrito));
     }
 
-    /* MOSTRAR APARTAMENTOS */
+    function dibujarListaCarrito() {
+    const carrito = obtenerCarrito();
+    const lista = document.getElementById("listaCarrito");
+    lista.innerHTML = "";
+
+    carrito.forEach(articulo => {
+        const li = document.createElement("li");
+        li.className = "flex items-center gap-4 p-3 mb-3 bg-gray-100 rounded-lg shadow hover:bg-gray-200 transition";
+
+        // Imagen
+        const img = document.createElement("img");
+        img.src = articulo.imageURL || "../img/default.webp";
+        img.alt = articulo.name;
+        img.className = "w-16 h-16 object-cover rounded";
+
+        // Info del producto
+        const info = document.createElement("div");
+        info.className = "flex-1 flex flex-col";
+
+        const name = document.createElement("span");
+        name.textContent = articulo.name;
+        name.className = "font-semibold text-gray-800";
+
+        const price = document.createElement("span");
+        price.textContent = (Number(articulo.price) * Number(articulo.amount)) + " €";
+        price.className = "text-gray-600 text-sm";
+
+        // Contador de cantidad
+        const cantidadDiv = document.createElement("div");
+        cantidadDiv.className = "flex items-center gap-2 mt-1";
+
+        const btnMenos = document.createElement("button");
+        btnMenos.textContent = "-";
+        btnMenos.className = "px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600";
+
+        const cantidad = document.createElement("span");
+        cantidad.textContent = articulo.amount;
+        cantidad.className = "px-2";
+
+        const btnMas = document.createElement("button");
+        btnMas.textContent = "+";
+        btnMas.className = "px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600";
+
+        cantidadDiv.append(btnMenos, cantidad, btnMas);
+
+        // Botón eliminar
+        const btnDelete = document.createElement("button");
+        btnDelete.textContent = "Eliminar";
+        btnDelete.className = "px-2 py-1 bg-gray-800 text-white rounded hover:bg-gray-900";
+
+        // Eventos
+        btnMas.addEventListener("click", () => {
+            articulo.amount++;
+            let carritoActual = obtenerCarrito().map(p => p.id === articulo.id ? { ...p, amount: articulo.amount } : p);
+            guardarCarrito(carritoActual);
+            dibujarListaCarrito();
+        });
+
+        btnMenos.addEventListener("click", () => {
+            articulo.amount--;
+            if (articulo.amount < 1) articulo.amount = 0;
+            let carritoActual = obtenerCarrito().map(p => p.id === articulo.id ? { ...p, amount: articulo.amount } : p);
+            guardarCarrito(carritoActual);
+            dibujarListaCarrito();
+        });
+
+        btnDelete.addEventListener("click", () => {
+            let carritoActual = obtenerCarrito().filter(a => a.id !== articulo.id);
+            guardarCarrito(carritoActual);
+            dibujarListaCarrito();
+        });
+
+        info.append(name, price, cantidadDiv);
+        li.append(img, info, btnDelete);
+        lista.append(li);
+    });
+
+    // Total
+    const totalDiv = document.createElement("div");
+    totalDiv.className = "mt-4 p-3 font-bold text-lg text-right border-t border-gray-300";
+    totalDiv.textContent = "Total: " + calcularTotal() + " €";
+    lista.append(totalDiv);
+}
+    // mostart Lista
+    
+    function calcularTotal() {
+        let carrito = obtenerCarrito();
+        let total = 0;
+
+        carrito.forEach(item => {
+            total += Number(item.price) * Number(item.amount);
+        });
+
+        return total;
+    }
 
     function mostrarLista(datosArray) {
 
@@ -204,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 }
                 guardarCarrito(carrito);
-
+                dibujarListaCarrito();
 
             });
 
